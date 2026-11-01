@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CAMARO.STOP">
+    <title>CAMARO.STOP</title>
+    <style>
+/* ==========================================================
+   CAMARO.STOP — стили
+   1) Переменные цветов (тёмная и светлая тема)
+   2) Базовые стили
+   3) Компоненты: шапка, меню, карточки, кнопки, формы
+   4) Заказы, календарь, склад, модальные окна
+   ========================================================== */
+
+/* ---------- 1. ЦВЕТА ---------- */
+:root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --input: #2c2c2e;
+    --highlight: #252528;
+    --border: #2c2c2e;
+    --border-soft: #242426;
+    --text: #ffffff;
+    --muted: #8e8e93;
+    --accent: #10b981;
+    --blue: #38bdf8;
+    --purple: #c084fc;
+    --danger: #ef4444;
+    --nav: #121214;
+}
+body.light {
+    --bg: #f2f2f7;
+    --card: #ffffff;
+    --input: #e5e5ea;
+    --highlight: #f8f8fa;
+    --border: #d1d1d6;
+    --border-soft: #e5e5ea;
+    --text: #000000;
+    --muted: #6c6c70;
+    --accent: #059669;
+    --blue: #0284c7;
+    --purple: #7e22ce;
+    --danger: #dc2626;
+    --nav: #ffffff;
+}
+
+/* ---------- 2. БАЗА ---------- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; max-width: 100vw; overflow-x: hidden; }
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    padding: calc(12px + env(safe-area-inset-top)) 12px calc(90px + env(safe-area-inset-bottom)) 12px;
+    transition: background-color .2s, color .2s;
+}
+h3 { margin: 0 0 12px 0; font-size: 14px; font-weight: 800; }
+p { margin: 0 0 8px 0; }
+label { display: block; font-size: 11px; color: var(--muted); margin: 0 0 4px 2px; }
+button { font-family: inherit; }
+[hidden] { display: none !important; }
+
+.view { display: none; }
+.view.active { display: block; }
+.step { display: none; }
+.step.active { display: block; }
+
+.muted { color: var(--muted); }
+.accent { color: var(--accent); }
+.danger-text { color: var(--danger); }
+.small-text { font-size: 11px; }
+.mb { margin-bottom: 12px; }
+.pre { white-space: pre-line; line-height: 1.45; font-size: 13px; }
+.row { display: flex; gap: 6px; align-items: center; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 6px; margin-top: 10px; }
+
+/* ---------- 3. КОМПОНЕНТЫ ---------- */
+.app-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border-soft);
+}
+.app-title { font-size: 18px; font-weight: 900; letter-spacing: .5px; user-select: none; padding: 4px; }
+.app-title span { color: var(--accent); }
+.header-controls { display: flex; align-items: center; gap: 6px; }
+.role-badge {
+    background: var(--input); border: 1px solid var(--border);
+    font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 10px; text-transform: uppercase;
+}
+.pill-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 12px; cursor: pointer; white-space: nowrap;
+}
+.pill-btn:active { border-color: var(--accent); }
+
+/* поля */
+input, select, textarea {
+    width: 100%;
+    background: var(--input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 16px;            /* 16px — чтобы iPhone не увеличивал экран при вводе */
+    font-family: inherit;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--muted); }
+input[type="date"], input[type="time"] { min-height: 46px; }
+#searchInput { margin-bottom: 10px; border-radius: 16px; background: var(--card); }
+#cityFilter { background: var(--card); border-radius: 14px; font-size: 14px; padding: 10px 14px; }
+.pin-input { text-align: center; font-size: 22px; letter-spacing: 8px; }
+
+/* карточки */
+.card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 14px 16px; margin-bottom: 10px;
+}
+.info-card { background: rgba(56, 189, 248, .08); }
+
+/* кнопки */
+.btn {
+    border: 1px solid var(--border); background: var(--input); color: var(--text);
+    padding: 12px 14px; border-radius: 14px; font-size: 13px; font-weight: 800; cursor: pointer;
+    text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+}
+.btn:active { opacity: .8; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.secondary { background: var(--input); }
+.btn.small { padding: 4px 10px; border-radius: 10px; }
+.btn.wide { width: 100%; }
+.accent-border { border-color: var(--accent); color: var(--accent); }
+.danger-border { border-color: var(--danger); color: var(--danger); }
+
+/* «таблетки» для выбора */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px 0; }
+.chip {
+    background: var(--input); border: 1px solid var(--border); color: var(--muted);
+    padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; user-select: none;
+}
+.chip.active { background: rgba(16, 185, 129, .18); color: var(--accent); border-color: var(--accent); }
+
+.dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; border: 1px solid rgba(255,255,255,.3); flex-shrink: 0; }
+.dot-white { background: #fff; border-color: #999; }
+.dot-black { background: #1a1a1a; }
+.dot-anthracite { background: #374151; }
+.dot-brown { background: #78350f; }
+
+.calc-line { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-weight: 700; }
+.calc-line strong { font-size: 15px; }
+
+.pay-box { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; margin: 6px 0 10px 0; }
+body.light .pay-box { background: var(--highlight); }
+.pay-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin: 4px 0; color: var(--muted); }
+.pay-row strong { color: var(--text); }
+.pay-row.big { font-size: 13px; font-weight: 800; }
+.pay-row.big strong { font-size: 15px; }
+.pay-row .danger-text, .pay-row strong.danger-text { color: var(--danger); }
+.pay-row strong.accent { color: var(--accent); }
+
+/* ---------- 4. МЕНЮ ---------- */
+.bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--nav); border-top: 1px solid var(--border-soft);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom)) 6px; min-height: 58px;
+}
+.nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: var(--muted); font-size: 10px; font-weight: 600; cursor: pointer; padding: 4px 0; user-select: none;
+}
+.nav-item.active { color: var(--text); }
+.nav-icon { font-size: 18px; }
+.nav-add {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--accent); color: #fff;
+    border: 3px solid var(--bg); display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 700; cursor: pointer; position: relative; top: -10px; flex-shrink: 0;
+}
+
+/* ---------- 5. ЗАКАЗЫ ---------- */
+.status-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.status-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    padding: 10px 2px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.status-btn.active { background: var(--input); color: var(--text); border-color: var(--accent); }
+.status-btn b { font-size: 11px; margin-left: 2px; }
+
+.order {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    margin-bottom: 8px; overflow: hidden;
+}
+.order-bar { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; user-select: none; }
+.order-main { min-width: 0; flex: 1; }
+.order-addr { font-size: 13.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.order-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.order-sum { font-size: 13px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+.order-details { display: none; padding: 12px 14px; border-top: 1px solid var(--border-soft); background: var(--highlight); }
+.order.open .order-details { display: block; }
+.badges { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+.badge { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 7px 9px; font-size: 11px; }
+.badge span { display: block; color: var(--muted); font-size: 9.5px; margin-bottom: 1px; }
+.order-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.order-actions .btn { padding: 10px 4px; font-size: 12px; }
+
+.item-row {
+    background: var(--input); padding: 9px 12px; border-radius: 12px; margin-bottom: 6px;
+    font-size: 12px; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+.item-del { color: var(--danger); font-weight: 900; cursor: pointer; padding: 2px 6px; }
+
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 13px; }
+
+/* ---------- 6. КАЛЕНДАРЬ ---------- */
+.cal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.cal-weekdays { margin-bottom: 4px; font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase; }
+.cal-cell {
+    aspect-ratio: 1; background: var(--input); border: 1px solid transparent; border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 12px; cursor: pointer; position: relative; user-select: none;
+}
+.cal-cell.empty { background: transparent; cursor: default; }
+.cal-cell.today { border: 2px solid var(--accent); color: var(--accent); font-weight: 800; }
+.cal-cell.selected { background: var(--accent); color: #fff; font-weight: 900; }
+.cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 4px; }
+.cal-cell.selected .cal-dot { background: #fff; }
+.event {
+    background: var(--input); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; font-size: 12px; cursor: pointer;
+}
+.event b { font-size: 13px; }
+.event .tag { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 8px; margin-right: 6px; }
+.tag.zamer { background: rgba(56,189,248,.2); color: var(--blue); }
+.tag.install { background: rgba(16,185,129,.2); color: var(--accent); }
+
+/* ---------- 7. СКЛАД ---------- */
+details.card { padding: 0; overflow: hidden; }
+details.card > summary {
+    padding: 14px 16px; font-size: 13.5px; font-weight: 800; cursor: pointer; list-style: none; user-select: none;
+}
+details.card > summary::-webkit-details-marker { display: none; }
+details.card > summary::after { content: "▼"; float: right; font-size: 11px; color: var(--muted); }
+details.card[open] > summary::after { content: "▲"; }
+.details-body { padding: 0 16px 14px 16px; }
+.stock-head, .stock-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; align-items: center; margin-bottom: 6px; font-size: 12px; }
+.stock-head { color: var(--muted); font-size: 10.5px; font-weight: 700; }
+.stock-row input { padding: 8px 6px; font-size: 14px; text-align: center; border-radius: 10px; }
+.stock-group { font-size: 11px; font-weight: 800; color: var(--blue); text-transform: uppercase; margin: 12px 0 6px 0; padding-bottom: 3px; border-bottom: 1px solid var(--border-soft); }
+.need-row { background: var(--input); border-radius: 12px; padding: 9px 12px; margin-bottom: 6px; font-size: 12px; }
+.need-row.deficit { background: rgba(239, 68, 68, .12); border: 1px solid var(--danger); }
+.need-row.ok { border: 1px solid transparent; }
+.need-row .sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+/* ---------- 8. МОДАЛЬНОЕ ОКНО ---------- */
+.modal {
+    display: none; position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.75);
+    align-items: flex-end; justify-content: center;
+}
+.modal.open { display: flex; }
+.modal-card {
+    background: var(--bg); width: 100%; max-width: 520px; max-height: 92vh; display: flex; flex-direction: column;
+    border-radius: 24px 24px 0 0; padding: 16px 14px calc(16px + env(safe-area-inset-bottom)) 14px;
+    border: 1px solid var(--border);
+}
+.modal-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); margin-bottom: 12px; font-size: 16px; }
+.modal-close { font-size: 20px; color: var(--muted); cursor: pointer; padding: 2px 10px; }
+.modal-body { overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
+.modal-foot { margin-top: 12px; }
+.modal-foot:empty { display: none; }
+.picker-item {
+    padding: 14px 8px; font-size: 14.5px; font-weight: 700; cursor: pointer;
+    border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between;
+}
+.cut-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 8px; }
+.cut-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; text-align: center; margin-top: 6px; }
+.cut-grid span { display: block; font-size: 9.5px; color: var(--muted); }
+.cut-grid strong { font-size: 13px; }
+
+.toast {
+    position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 14px; font-size: 13px; font-weight: 700;
+    opacity: 0; pointer-events: none; transition: all .25s; z-index: 200; max-width: 90vw; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    </style>
+</head>
+<body>
+
+    <!-- ШАПКА -->
+    <header class="app-header">
+        <div class="app-title" data-action="logo-tap">CAMARO<span>.STOP</span></div>
+        <div class="header-controls">
+            <span class="role-badge" id="roleBadge"></span>
+            <button class="pill-btn" id="syncBadge" data-action="sync-now">⚡</button>
+            <button class="pill-btn" id="themeBtn" data-action="toggle-theme"></button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ЭКРАН: ЗАКАЗЫ -->
+        <section id="view-orders" class="view">
+            <input id="searchInput" type="search" placeholder="🔍 Поиск по адресу или телефону">
+            <select id="cityFilter" class="mb"></select>
+            <div class="status-tabs" id="statusTabs"></div>
+            <div id="ordersList"></div>
+        </section>
+
+        <!-- ЭКРАН: КАЛЕНДАРЬ -->
+        <section id="view-calendar" class="view">
+            <div class="card">
+                <div class="cal-head">
+                    <button class="btn secondary small" data-action="cal-prev">‹</button>
+                    <strong id="calTitle"></strong>
+                    <button class="btn secondary small" data-action="cal-next">›</button>
+                </div>
+                <div class="cal-grid cal-weekdays">
+                    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+                </div>
+                <div class="cal-grid" id="calGrid"></div>
+            </div>
+            <div class="chips">
+                <button class="chip" data-action="cal-today" data-offset="0">Сегодня</button>
+                <button class="chip" data-action="cal-today" data-offset="1">Завтра</button>
+                <button class="chip" data-action="open-history">📁 История</button>
+            </div>
+            <div class="card">
+                <h3 id="calDayTitle"></h3>
+                <div id="calDayList"></div>
+            </div>
+        </section>
+
+        <!-- ЭКРАН: НОВЫЙ ЗАКАЗ (4 шага) -->
+        <section id="view-new" class="view">
+            <div class="card info-card" id="editHeader" hidden>
+                <strong id="editHeaderTitle"></strong>
+                <div class="muted" id="editHeaderSub"></div>
+            </div>
+
+            <!-- Шаг 0: клиент -->
+            <div id="step0" class="step">
+                <div class="card">
+                    <h3>📍 Новая заявка на замер</h3>
+                    <button class="btn secondary wide mb" data-action="open-wa-parser">🤖 Вставить текст из WhatsApp</button>
+
+                    <label for="fCity">Район / город</label>
+                    <select id="fCity" class="mb"></select>
+
+                    <label for="fAddress">Адрес объекта</label>
+                    <input id="fAddress" type="text" placeholder="Улица, дом, квартира" class="mb">
+
+                    <label for="fPhone">Телефон</label>
+                    <input id="fPhone" type="tel" inputmode="tel" placeholder="+7 (7XX) XXX-XX-XX" class="mb">
+
+                    <div class="grid2 mb">
+                        <div>
+                            <label for="fZamerDate">Дата замера</label>
+                            <input id="fZamerDate" type="date">
+                        </div>
+                        <div>
+                            <label for="fZamerTime">Время</label>
+                            <input id="fZamerTime" type="time">
+                        </div>
+                    </div>
+
+                    <label for="fMaster">Мастер</label>
+                    <select id="fMaster"></select>
+                </div>
+                <button class="btn primary wide mb" data-action="save-quick">💾 Сохранить заявку на замер</button>
+                <button class="btn secondary wide" data-action="client-to-dims">📐 Внести размеры и расчёт ➔</button>
+            </div>
+
+            <!-- Шаг 1: размеры -->
+            <div id="step1" class="step">
+                <div class="card">
+                    <h3>📐 Шаг 1: размеры проёма</h3>
+                    <div class="grid2 mb">
+                        <input id="fW" type="number" inputmode="decimal" placeholder="Ширина, см">
+                        <input id="fH" type="number" inputmode="decimal" placeholder="Высота, см">
+                    </div>
+
+                    <label>Комната</label>
+                    <div class="chips">
+                        <button class="chip active" data-action="chip" data-group="room" data-value="Кухня">Кухня</button>
+                        <button class="chip" data-action="chip" data-group="room" data-value="Зал">Зал</button>
+                        <button class="chip" data-action="chip" data-group="room" data-value="Спальня">Спальня</button>
+                        <button class="chip" data-action="chip" data-group="room" data-value="Детская">Детская</button>
+                        <button class="chip" data-action="chip" data-group="room" data-value="Балкон">Балкон</button>
+                    </div>
+                    <input id="fRoomCustom" type="text" placeholder="Или своё название (напр. Лоджия)" class="mb">
+
+                    <label>Тип конструкции</label>
+                    <div class="chips">
+                        <button class="chip active" data-action="chip" data-group="construct" data-value="window">ОКНО</button>
+                        <button class="chip" data-action="chip" data-group="construct" data-value="door">ДВЕРЬ</button>
+                        <button class="chip" data-action="chip" data-group="construct" data-value="double">ДВОЙНОЕ КРЫЛО</button>
+                    </div>
+
+                    <label>Сетка</label>
+                    <div class="chips" id="meshChips"></div>
+
+                    <label>Цвет профиля</label>
+                    <div class="chips" id="colorChips"></div>
+
+                    <div class="calc-line">
+                        <span class="muted" id="calcArea">Площадь: 0.00 м²</span>
+                        <strong class="accent" id="calcPrice">0 тг</strong>
+                    </div>
+                </div>
+
+                <button class="btn secondary wide mb accent-border" data-action="add-item">+ Добавить изделие в заказ</button>
+                <div id="draftList"></div>
+
+                <div class="grid-1-2">
+                    <button class="btn secondary" data-action="go-orders">⬅ К заказам</button>
+                    <button class="btn primary" data-action="to-pricing">Далее к сумме ➔</button>
+                </div>
+            </div>
+
+            <!-- Шаг 2: цена -->
+            <div id="step2" class="step">
+                <div class="card">
+                    <h3>💰 Шаг 2: стоимость и скидка</h3>
+                    <div class="pay-box">
+                        <div class="pay-row"><span>Сумма без скидки:</span><strong id="pBase">0 тг</strong></div>
+                        <div class="pay-row"><span class="accent">Скидка:</span><strong id="pDisc">0%</strong></div>
+                        <div class="pay-row big"><span>Итого:</span><strong class="accent" id="pTotal">0 тг</strong></div>
+                    </div>
+
+                    <label>Быстрая скидка</label>
+                    <div class="chips" id="discountChips">
+                        <button class="chip active" data-action="chip" data-group="discount" data-value="0">Без скидки</button>
+                        <button class="chip" data-action="chip" data-group="discount" data-value="10">10%</button>
+                        <button class="chip" data-action="chip" data-group="discount" data-value="15">15%</button>
+                        <button class="chip" data-action="chip" data-group="discount" data-value="20">20%</button>
+                        <button class="chip" data-action="chip" data-group="discount" data-value="25">25%</button>
+                    </div>
+
+                    <label for="fPrepay">Предоплата, тг</label>
+                    <div class="row mb">
+                        <input id="fPrepay" type="number" inputmode="numeric" placeholder="Сумма аванса">
+                        <button class="btn secondary" data-action="prepay-percent" data-percent="50">50%</button>
+                        <button class="btn secondary" data-action="prepay-percent" data-percent="100">100%</button>
+                    </div>
+
+                    <div class="pay-box">
+                        <div class="pay-row"><span class="danger-text">Остаток к доплате:</span><strong class="danger-text" id="pBalance">0 тг</strong></div>
+                    </div>
+                </div>
+                <div class="grid-1-2">
+                    <button class="btn secondary" data-action="go-step" data-step="1">⬅ Назад</button>
+                    <button class="btn primary" data-action="go-step" data-step="3">Далее к установке ➔</button>
+                </div>
+            </div>
+
+            <!-- Шаг 3: установка -->
+            <div id="step3" class="step">
+                <div class="card">
+                    <h3>🛠 Шаг 3: дата и время установки</h3>
+                    <div class="grid2 mb">
+                        <div>
+                            <label for="fInstallDate">Дата</label>
+                            <input id="fInstallDate" type="date">
+                        </div>
+                        <div>
+                            <label for="fInstallTime">Время</label>
+                            <input id="fInstallTime" type="time">
+                        </div>
+                    </div>
+                    <label>Быстрая дата</label>
+                    <div class="chips">
+                        <button class="chip" data-action="quick-install" data-offset="1">Завтра</button>
+                        <button class="chip" data-action="quick-install" data-offset="2">Послезавтра</button>
+                        <button class="chip" data-action="quick-install" data-offset="3">Через 2 дня</button>
+                    </div>
+                    <p class="muted small-text">Если дату пока не знаете — оставьте пустой, выберете позже.</p>
+                </div>
+                <div class="grid-1-2">
+                    <button class="btn secondary" data-action="go-step" data-step="2">⬅ К сумме</button>
+                    <button class="btn primary" data-action="finish-order">💾 Сохранить заказ</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЭКРАН: СКЛАД -->
+        <section id="view-stock" class="view">
+            <button class="btn secondary wide mb accent-border" data-action="open-finance">📊 Доходы и расходы</button>
+            <div id="stockNeeds"></div>
+            <div id="stockInputs"></div>
+        </section>
+
+        <!-- ЭКРАН: НАСТРОЙКИ -->
+        <section id="view-settings" class="view">
+            <div id="settingsBody"></div>
+        </section>
+    </main>
+
+    <!-- НИЖНЕЕ МЕНЮ (рисуется из JS, зависит от роли) -->
+    <nav class="bottom-nav" id="bottomNav"></nav>
+
+    <!-- ОДНО УНИВЕРСАЛЬНОЕ МОДАЛЬНОЕ ОКНО -->
+    <div class="modal" id="modal">
+        <div class="modal-card">
+            <div class="modal-head">
+                <strong id="modalTitle"></strong>
+                <span class="modal-close" data-action="close-modal">✕</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-foot" id="modalFoot"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <input type="file" id="importFile" accept="application/json" hidden>
+
+    <script>
+/* ==========================================================
+   CAMARO.STOP — логика приложения (чистый JavaScript, без библиотек)
+
+   Оглавление файла:
+    1. Константы и настройки по умолчанию
+    2. Хранилище (localStorage) и состояние
+    3. Вспомогательные функции
+    4. Бизнес-логика: цены, раскрой, потребность склада
+    5. Роли и права
+    6. Окна, уведомления, навигация
+    7. Список заказов
+    8. Календарь
+    9. Новый заказ (4 шага)
+   10. Склад
+   11. Касса (доходы/расходы)
+   12. Настройки
+   13. Синхронизация с Google Таблицей
+   14. Разбор текста из WhatsApp
+   15. Обработчики кликов (actions)
+   16. Запуск
+   ========================================================== */
+'use strict';
+
+/* ==========================================================
+   1. КОНСТАНТЫ
+   ========================================================== */
+const APP_VERSION = '1.0';
+
+const CITIES = ['Караганда', 'Юго-восток', 'Майкудук', 'Пришахтинск', 'Сортировка', 'Актас',
+                'Сарань', 'Шахан', 'Шахтинск', 'Абай', 'Топар', 'Темиртау'];
+
+// key — то, что хранится в заказе; name — то, что видит пользователь
+const COLORS = [
+    { key: 'white',      name: 'Белый' },
+    { key: 'black',      name: 'Чёрный' },
+    { key: 'anthracite', name: 'Антрацит' },
+    { key: 'brown',      name: 'Коричневый' }
+];
+const MESH_TYPES = { standard: 'Обычная', antimidge: 'Антимошка', antidust: 'Антипыль' };
+const CONSTRUCTS = { window: 'Окно', door: 'Дверь', double: 'Двойное крыло' };
+const STATUSES = ['Замер', 'Установка', 'Завершён'];
+
+const MONTHS_NOM = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+const MONTHS_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const WEEKDAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+const MESH_PACK_AREA = 90; // одна пачка сетки 3.0 м × 30 м = 90 м²
+
+// Что может каждая роль. tabs — какие вкладки видны ('new' = кнопка «+»)
+const ROLES = {
+    admin:    { label: 'Управляющий', full: '👑 Управляющий (полный доступ)',
+                tabs: ['orders', 'calendar', 'new', 'stock', 'settings'],
+                can: ['create', 'measure', 'status', 'delete', 'cut', 'prices', 'stock', 'finance'] },
+    zamer:    { label: 'Замерщик', full: '📏 Замерщик',
+                tabs: ['orders', 'calendar', 'new', 'settings'],
+                can: ['create', 'measure', 'cut'] },
+    install:  { label: 'Установщик', full: '🛠️ Установщик / монтажник',
+                tabs: ['orders', 'calendar', 'settings'],
+                can: ['status', 'cut'] },
+    workshop: { label: 'Цех', full: '🏭 Работник цеха (сборка и склад)',
+                tabs: ['orders', 'stock', 'settings'],
+                can: ['cut', 'stock'] }
+};
+
+const DEFAULT_SETTINGS = {
+    // ЦЕНЫ ЗА 1 м² (тг). Меняются в приложении: Настройки → Цены.
+    prices: { standard: 30000, antimidge: 35000, antidust: 40000 },
+    pin: '1234',              // смените в Настройках!
+    role: 'admin',
+    theme: 'dark',
+    scriptUrl: '',            // ссылка Google Apps Script (необязательно)
+    barLength: 600,           // длина одного хлыста профиля, см (уточните у цеха)
+    blade: 0.4,               // толщина пилы, см — прибавляется к длинам распила
+    masters: ['Мастер 1', 'Мастер 2']
+};
+
+/* ==========================================================
+   2. ХРАНИЛИЩЕ И СОСТОЯНИЕ
+   Всё хранится в localStorage телефона (ключи ниже).
+   ========================================================== */
+const KEY = {
+    orders: 'cs_orders', deleted: 'cs_deleted', settings: 'cs_settings',
+    stock: 'cs_stock', expenses: 'cs_expenses'
+};
+const ls = (typeof localStorage !== 'undefined') ? localStorage : { getItem() { return null; }, setItem() {} };
+
+function load(key, fallback) {
+    try {
+        const raw = ls.getItem(key);
+        return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) { return fallback; }
+}
+function save(key, value) { ls.setItem(key, JSON.stringify(value)); }
+
+let settings = Object.assign({}, DEFAULT_SETTINGS, load(KEY.settings, {}));
+settings.prices = Object.assign({}, DEFAULT_SETTINGS.prices, settings.prices || {});
+if (!ROLES[settings.role]) settings.role = 'admin';
+
+let orders = load(KEY.orders, []);
+let deletedIds = load(KEY.deleted, []);
+let stock = load(KEY.stock, {});       // { frame_white: {qty: 3, cost: 7800}, ... }
+let expenses = load(KEY.expenses, []); // [{id, title, sum, date}]
+
+const saveSettings = () => save(KEY.settings, settings);
+const saveOrders = () => save(KEY.orders, orders);
+const saveDeleted = () => save(KEY.deleted, deletedIds);
+const saveStock = () => save(KEY.stock, stock);
+const saveExpenses = () => save(KEY.expenses, expenses);
+
+// Состояние интерфейса (не сохраняется)
+const state = {
+    view: 'orders',
+    statusFilter: 'Установка',
+    city: 'Все',
+    search: '',
+    expanded: new Set(),
+    calYear: 0, calMonth: 0, calSelected: '',
+    calc: { room: 'Кухня', construct: 'window', mesh: 'standard', color: 'white' },
+    draft: { id: null, items: [], discount: 0 },
+    cutOrderId: null,
+    logoTaps: 0, logoTimer: null
+};
+const modalState = { onPin: null, onConfirm: null };
+
+/* ==========================================================
+   3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+   ========================================================== */
+const $ = id => document.getElementById(id);
+const num = v => parseFloat(v) || 0;
+const clone = x => JSON.parse(JSON.stringify(x));
+const pad = n => String(n).padStart(2, '0');
+
+function esc(s) {
+    return String(s === undefined || s === null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function fmtNum(n) { return Math.round(n).toLocaleString('ru-RU'); }
+function fmtMoney(n) { return fmtNum(n) + ' тг'; }
+function fmtCm(n) { return String(+Number(n).toFixed(1)); }
+
+// Дата в формате YYYY-MM-DD по МЕСТНОМУ времени (toISOString сдвигает дату из-за UTC!)
+function toISO(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function todayISO() { return toISO(new Date()); }
+function addDaysISO(days) { const d = new Date(); d.setDate(d.getDate() + days); return toISO(d); }
+function dateRu(iso) {
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-').map(Number);
+    return `${d} ${MONTHS_GEN[m - 1]}, ${WEEKDAYS[new Date(y, m - 1, d).getDay()]}`;
+}
+function newId() { return String(Date.now()) + Math.random().toString(36).slice(2, 6); }
+function colorName(key) { const c = COLORS.find(c => c.key === key); return c ? c.name : key; }
+function digits(s) { return String(s || '').replace(/\D/g, ''); }
+
+// Телефон: +7 (7XX) XXX-XX-XX
+function formatPhone(raw) {
+    let d = digits(raw);
+    if (d.startsWith('8')) d = '7' + d.slice(1);
+    if (!d.startsWith('7')) d = '7' + d;
+    d = d.slice(0, 11);
+    let r = '+7';
+    if (d.length > 1) r += ' (' + d.slice(1, 4);
+    if (d.length >= 4) r += ')';
+    if (d.length > 4) r += ' ' + d.slice(4, 7);
+    if (d.length > 7) r += '-' + d.slice(7, 9);
+    if (d.length > 9) r += '-' + d.slice(9, 11);
+    return r;
+}
+
+function splitAddress(order) { return { city: order.city || 'Караганда', street: order.address || 'Адрес не указан' }; }
+
+/* ==========================================================
+   4. БИЗНЕС-ЛОГИКА
+   ========================================================== */
+
+// Цена одного изделия: площадь (м²) × цена за м² выбранной сетки
+function itemPrice(width, height, mesh) {
+    const area = (width / 100) * (height / 100);
+    return { area, total: Math.round(area * (settings.prices[mesh] || 0)) };
+}
+
+// Итоги заказа: сумма, скидка, предоплата, остаток
+function orderCalc(items, discountPercent, prepay) {
+    const base = items.reduce((s, i) => s + (i.total || 0), 0);
+    const discAmount = Math.round(base * discountPercent / 100);
+    const total = Math.max(0, base - discAmount);
+    return { base, discAmount, total, prepay, balance: Math.max(0, total - prepay) };
+}
+
+// РАСКРОЙ ПРОФИЛЯ — формулы из исходного файла знакомого (размеры в см).
+// upper — верх/низ рамы, side — бока рамы, wing — крыло, tyulLen/tyulPik — тюль и пики, cord — нить.
+function getCutting(construct, W, H) {
+    const b = Number(settings.blade) || 0;
+    const f = n => +Math.max(0, n).toFixed(1);
+    if (construct === 'door') {
+        const t = f(H - 2.6);
+        return { typeName: 'ДВЕРЬ', upper: f(W - 2.5 + b), side: f(H - 5.5 + b), wing: f(H - 6.3 + b),
+                 tyulLen: t, tyulPik: Math.round(W / 2.5), cord: Math.round((W + H) * 2 + 20) };
+    }
+    if (construct === 'double') {
+        const t = f(H - 3.0);
+        return { typeName: 'ДВОЙНОЕ', upper: f(W - 2.5 + b), side: f(H - 5.5 + b), wing: f(W / 2 - 3.1 + b),
+                 tyulLen: t, tyulPik: Math.round((W / 2) / 2.5), cord: Math.round((W + H) * 3) };
+    }
+    const t = f(W - 2.6); // окно по умолчанию
+    return { typeName: 'ОКНО', upper: f(W - 5.5 + b), side: f(H - 2.5 + b), wing: f(W - 6.2 + b),
+             tyulLen: t, tyulPik: Math.round(H / 2.5), cord: Math.round((W + H) * 2 + 15) };
+}
+
+// Укладка кусков в хлысты: сначала самые длинные (алгоритм First Fit Decreasing).
+// Длины кусков уже включают запас на пилу (см. getCutting).
+function packBars(pieces, barLen) {
+    const sorted = pieces.slice().sort((a, b) => b - a);
+    const bars = [];
+    const oversize = [];
+    sorted.forEach(p => {
+        if (p > barLen) { oversize.push(p); return; }
+        const bar = bars.find(b => b.used + p <= barLen);
+        if (bar) { bar.cuts.push(p); bar.used += p; }
+        else bars.push({ cuts: [p], used: p });
+    });
+    return { bars, oversize };
+}
+
+function stockQty(key) { return num(stock[key] && stock[key].qty); }
+function stockCost(key) { return num(stock[key] && stock[key].cost); }
+
+// Потребность в материалах по всем заказам в работе (Замер и Установка с внесёнными размерами)
+function computeNeeds() {
+    const active = orders.filter(o => o.status !== 'Завершён' && o.items && o.items.length);
+    const pieces = {}, kits = {};
+    let area = 0;
+    active.forEach(o => o.items.forEach(it => {
+        const c = getCutting(it.construct, it.width, it.height);
+        if (!pieces[it.color]) pieces[it.color] = [];
+        pieces[it.color].push(c.upper, c.upper, c.side, c.side);
+        kits[it.color] = (kits[it.color] || 0) + 1;
+        area += (it.width / 100) * (it.height / 100);
+    }));
+
+    const barLen = Number(settings.barLength) || 600;
+    const frames = Object.keys(pieces).map(color => {
+        const p = packBars(pieces[color], barLen);
+        const have = stockQty('frame_' + color);
+        const deficit = Math.max(0, p.bars.length - have);
+        const used = p.bars.reduce((s, b) => s + b.used, 0);
+        return { color, need: p.bars.length, have, deficit, oversize: p.oversize,
+                 waste: Math.round(p.bars.length * barLen - used), cost: deficit * stockCost('frame_' + color) };
+    });
+    const kitRows = Object.keys(kits).map(color => {
+        const have = stockQty('kit_' + color);
+        const deficit = Math.max(0, kits[color] - have);
+        return { color, need: kits[color], have, deficit, cost: deficit * stockCost('kit_' + color) };
+    });
+    const haveArea = stockQty('mesh_packs') * MESH_PACK_AREA;
+    const meshDeficitArea = Math.max(0, area - haveArea);
+    const meshDeficitPacks = Math.ceil(meshDeficitArea / MESH_PACK_AREA);
+    const mesh = { needArea: area, haveArea, deficitPacks: meshDeficitPacks, cost: meshDeficitPacks * stockCost('mesh_packs') };
+
+    const totalCost = frames.reduce((s, r) => s + r.cost, 0) + kitRows.reduce((s, r) => s + r.cost, 0) + mesh.cost;
+    return { orderCount: active.length, frames, kits: kitRows, mesh, totalCost, barLen };
+}
+
+function financeTotals() {
+    let revenue = 0, collected = 0, pending = 0;
+    orders.forEach(o => {
+        const total = o.finalTotal || 0;
+        revenue += total;
+        if (o.status === 'Завершён') collected += total;
+        else { collected += Math.min(o.prepayment || 0, total); pending += o.balanceDue || 0; }
+    });
+    const spent = expenses.reduce((s, e) => s + (e.sum || 0), 0);
+    return { revenue, collected, pending, spent, profit: collected - spent };
+}
+
+/* ==========================================================
+   5. РОЛИ
+   Важно: это защита от случайных нажатий, а не настоящая безопасность.
+   Настоящую защиту даёт только сервер (см. README).
+   ========================================================== */
+function can(permission) { return ROLES[settings.role].can.includes(permission); }
+
+/* ==========================================================
+   6. ОКНА, УВЕДОМЛЕНИЯ, НАВИГАЦИЯ
+   ========================================================== */
+function openModal(title, bodyHtml, footHtml) {
+    $('modalTitle').textContent = title;
+    $('modalBody').innerHTML = bodyHtml;
+    $('modalFoot').innerHTML = footHtml || '';
+    $('modal').classList.add('open');
+}
+function closeModal() {
+    $('modal').classList.remove('open');
+    modalState.onPin = null;
+    modalState.onConfirm = null;
+}
+function alertBox(title, msg) {
+    openModal(title, `<p class="pre">${esc(msg)}</p>`,
+        `<button class="btn primary wide" data-action="close-modal">ОК</button>`);
+}
+function confirmBox(title, msg, onYes, yesLabel) {
+    openModal(title, `<p class="pre">${esc(msg)}</p>`,
+        `<div class="grid2"><button class="btn secondary" data-action="close-modal">Отмена</button>
+         <button class="btn danger" data-action="confirm-yes">${esc(yesLabel || 'Да')}</button></div>`);
+    modalState.onConfirm = onYes; // после openModal, чтобы не затёрлось
+}
+function pinBox(title, onOk) {
+    openModal(title,
+        `<p class="muted small-text">Введите PIN-код управляющего:</p>
+         <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••">`,
+        `<div class="grid2"><button class="btn secondary" data-action="close-modal">Отмена</button>
+         <button class="btn primary" data-action="pin-ok">Подтвердить</button></div>`);
+    modalState.onPin = onOk;
+    setTimeout(() => { const i = $('pinInput'); if (i) i.focus(); }, 50);
+}
+
+let toastTimer = null;
+function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function applyTheme() {
+    const light = settings.theme === 'light';
+    document.body.classList.toggle('light', light);
+    $('themeBtn').textContent = light ? '🌙 Ночная' : '☀️ Дневная';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', light ? '#f2f2f7' : '#000000');
+}
+
+function renderNav() {
+    const meta = { orders: ['📋', 'Заказы'], calendar: ['📅', 'Календарь'], stock: ['📦', 'Склад'], settings: ['⚙️', 'Настройки'] };
+    $('bottomNav').innerHTML = ROLES[settings.role].tabs.map(t => {
+        if (t === 'new') return `<div class="nav-add" data-action="new-order">+</div>`;
+        return `<div class="nav-item ${t === state.view ? 'active' : ''}" data-action="nav" data-view="${t}">
+                    <div class="nav-icon">${meta[t][0]}</div><div>${meta[t][1]}</div></div>`;
+    }).join('');
+    $('roleBadge').textContent = ROLES[settings.role].label;
+}
+
+function switchNav(view) {
+    const tabs = ROLES[settings.role].tabs;
+    if (view !== 'new' && !tabs.includes(view)) view = 'orders';
+    state.view = view;
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+    renderNav();
+    if (view === 'orders') renderOrders();
+    if (view === 'calendar') renderCalendar();
+    if (view === 'stock') renderStock();
+    if (view === 'settings') renderSettings();
+    window.scrollTo(0, 0);
+}
+
+// Обновить текущий экран после синхронизации (формы не трогаем, чтобы не сбить ввод)
+function refreshCurrentView() {
+    if (state.view === 'orders') renderOrders();
+    if (state.view === 'calendar') renderCalendar();
+    if (state.view === 'stock') renderStock();
+}
+
+/* ==========================================================
+   7. СПИСОК ЗАКАЗОВ
+   ========================================================== */
+function orderWhen(o) {
+    if (o.status === 'Замер') return `🕒 ${dateRu(o.zamerDate)}${o.zamerTime ? ' · ' + o.zamerTime : ''}`;
+    if (o.status === 'Установка') {
+        return o.installDate ? `🛠 ${dateRu(o.installDate)}${o.installTime ? ' · ' + o.installTime : ''}` : '🛠 дата не назначена';
+    }
+    return `✅ ${o.installDate ? dateRu(o.installDate) : 'завершён'}`;
+}
+
+function matchesFilters(o) {
+    if (state.city !== 'Все' && o.city !== state.city) return false;
+    const q = state.search.trim().toLowerCase();
+    if (q && !(`${o.address} ${o.phone} ${o.city}`).toLowerCase().includes(q)) return false;
+    return true;
+}
+
+function sortKey(o) {
+    if (o.status === 'Замер') return (o.zamerDate || '9999') + (o.zamerTime || '');
+    if (o.status === 'Установка') return (o.installDate || '9999') + (o.installTime || '');
+    return String(9e15 - (o.updatedAt || 0)).padStart(16, '0'); // завершённые — новые сверху
+}
+
+function renderOrders() {
+    const base = orders.filter(matchesFilters);
+    $('statusTabs').innerHTML = STATUSES.map(s => {
+        const n = base.filter(o => o.status === s).length;
+        return `<button class="status-btn ${s === state.statusFilter ? 'active' : ''}" data-action="set-status-filter" data-value="${s}">${s}<b>${n || ''}</b></button>`;
+    }).join('');
+
+    const list = base.filter(o => o.status === state.statusFilter).sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+    if (!list.length) {
+        $('ordersList').innerHTML = `<div class="empty">Здесь пока пусто.<br>Нажмите «+», чтобы добавить заявку.</div>`;
+        return;
+    }
+    $('ordersList').innerHTML = list.map(orderCardHtml).join('');
+}
+
+function orderCardHtml(o) {
+    const a = splitAddress(o);
+    const items = o.items || [];
+    const area = items.reduce((s, i) => s + (i.width / 100) * (i.height / 100), 0);
+    const open = state.expanded.has(o.id);
+    const phoneDigits = digits(o.phone);
+
+    let when = '';
+    if (o.status === 'Замер') {
+        when = `<div class="badge"><span>Замер</span>${dateRu(o.zamerDate)} ${esc(o.zamerTime || '')}</div>
+                <div class="badge"><span>Мастер</span>${esc(o.master || '—')}</div>`;
+    } else {
+        when = `<div class="badge"><span>Установка</span>${o.installDate ? dateRu(o.installDate) + ' ' + esc(o.installTime || '') : 'не назначена'}</div>
+                <div class="badge"><span>Изделий / площадь</span>${items.length} шт · ${area.toFixed(2)} м²</div>`;
+    }
+
+    const pay = items.length ? `
+        <div class="pay-box">
+            <div class="pay-row"><span>Итого${o.discount ? ' (скидка ' + o.discount + '%)' : ''}:</span><strong>${fmtMoney(o.finalTotal || 0)}</strong></div>
+            <div class="pay-row"><span>Предоплата:</span><strong>${fmtMoney(o.prepayment || 0)}</strong></div>
+            <div class="pay-row"><span class="danger-text">Остаток:</span><strong class="danger-text">${fmtMoney(o.balanceDue || 0)}</strong></div>
+        </div>` : `<p class="muted small-text">Размеры ещё не внесены.</p>`;
+
+    const btns = [];
+    if (phoneDigits) {
+        btns.push(`<a class="btn" href="tel:+${phoneDigits}">📞 Позвонить</a>`);
+        btns.push(`<a class="btn" href="https://wa.me/${phoneDigits}" target="_blank" rel="noopener">💬 WhatsApp</a>`);
+    }
+    if (can('cut')) btns.push(`<button class="btn accent-border" data-action="open-cut" data-id="${o.id}">✂️ Раскрой</button>`);
+    if (can('measure')) btns.push(`<button class="btn" data-action="open-measure" data-id="${o.id}">📐 ${items.length ? 'Изменить размеры' : 'Внести размеры'}</button>`);
+    if (can('status')) btns.push(`<button class="btn" data-action="open-status" data-id="${o.id}">🔄 Статус</button>`);
+    if (can('delete')) btns.push(`<button class="btn danger-border" data-action="delete-order" data-id="${o.id}">🗑 Удалить</button>`);
+
+    return `
+    <div class="order ${open ? 'open' : ''}" data-order="${o.id}">
+        <div class="order-bar" data-action="toggle-order" data-id="${o.id}">
+            <div class="order-main">
+                <div class="order-addr">${esc(a.street)}</div>
+                <div class="order-sub">${esc(a.city)} · ${esc(o.phone || 'без телефона')} · ${orderWhen(o)}</div>
+            </div>
+            <div class="order-sum">${items.length ? fmtMoney(o.finalTotal || 0) : ''}</div>
+        </div>
+        <div class="order-details">
+            <div class="badges">${when}</div>
+            ${pay}
+            <div class="order-actions">${btns.join('')}</div>
+        </div>
+    </div>`;
+}
+
+function openOrderInList(id) {
+    const o = orders.find(x => x.id === id);
+    if (!o) return;
+    closeModal();
+    state.statusFilter = o.status;
+    state.expanded.add(id);
+    switchNav('orders');
+    setTimeout(() => {
+        const el = document.querySelector(`[data-order="${id}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+}
+
+function openStatusModal(id) {
+    const o = orders.find(x => x.id === id);
+    if (!o) return;
+    openModal('Статус заказа', STATUSES.map(s =>
+        `<div class="picker-item" data-action="apply-status" data-id="${id}" data-value="${s}">
+            <span>${s}</span><span class="accent">${o.status === s ? '✓' : ''}</span></div>`).join(''));
+}
+
+function deleteOrder(id) {
+    orders = orders.filter(o => o.id !== id);
+    if (!deletedIds.includes(id)) deletedIds.push(id);
+    saveOrders(); saveDeleted();
+    renderOrders();
+    toast('Заказ удалён');
+}
+
+/* ---------- Карта раскроя ---------- */
+function openCut(id) {
+    const o = orders.find(x => x.id === id);
+    if (!o) return;
+    state.cutOrderId = id;
+    const a = splitAddress(o);
+    let html = `<div class="cut-card"><strong>📍 ${esc(a.street)}</strong>
+        <div class="muted small-text">${esc(o.phone || '')} · установка: ${o.installDate ? dateRu(o.installDate) : 'не назначена'}</div></div>`;
+    if (!o.items || !o.items.length) {
+        html += `<div class="empty">Размеры ещё не внесены.</div>`;
+    } else {
+        o.items.forEach((it, i) => {
+            const c = getCutting(it.construct, it.width, it.height);
+            html += `<div class="cut-card">
+                <strong>#${i + 1} [${esc(it.room)}] — ${c.typeName}</strong>
+                <div class="muted small-text">${it.width} × ${it.height} см · ${colorName(it.color)} · ${MESH_TYPES[it.mesh] || ''}</div>
+                <div class="cut-grid">
+                    <div><span>Верх/низ</span><strong>${fmtCm(c.upper)} см</strong></div>
+                    <div><span>Бока</span><strong>${fmtCm(c.side)} см</strong></div>
+                    <div><span>Крыло</span><strong>${fmtCm(c.wing)} см</strong></div>
+                    <div><span>Тюль</span><strong>${fmtCm(c.tyulLen)} см</strong></div>
+                    <div><span>Пики</span><strong>${c.tyulPik} п</strong></div>
+                    <div><span>Нить</span><strong>${c.cord} см</strong></div>
+                </div></div>`;
+        });
+    }
+    openModal('✂️ Размеры и раскрой', html,
+        `<div class="grid2"><button class="btn secondary" data-action="share-cut">💬 В WhatsApp цеха</button>
+         <button class="btn primary" data-action="close-modal">Закрыть</button></div>`);
+}
+
+function shareCut() {
+    const o = orders.find(x => x.id === state.cutOrderId);
+    if (!o) return;
+    let t = `✂️ КАРТА РАСКРОЯ — CAMARO.STOP\nАдрес: ${o.city}, ${o.address}\nТелефон: ${o.phone || '—'}\nУстановка: ${o.installDate ? dateRu(o.installDate) : 'не назначена'}\n------------------\n`;
+    (o.items || []).forEach((it, i) => {
+        const c = getCutting(it.construct, it.width, it.height);
+        t += `#${i + 1} [${it.room}] ${c.typeName} ${it.width}x${it.height} см, ${colorName(it.color)}\n` +
+             `  верх/низ ${fmtCm(c.upper)}, бока ${fmtCm(c.side)}, крыло ${fmtCm(c.wing)}\n` +
+             `  тюль ${fmtCm(c.tyulLen)} (${c.tyulPik} пик), нить ${c.cord}\n`;
+    });
+    window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank');
+}
+
+/* ==========================================================
+   8. КАЛЕНДАРЬ
+   ========================================================== */
+function eventsFor(iso) {
+    const ev = [];
+    orders.forEach(o => {
+        if (o.status === 'Замер' && o.zamerDate === iso) ev.push({ type: 'zamer', time: o.zamerTime || '', o });
+        if (o.status === 'Установка' && o.installDate === iso) ev.push({ type: 'install', time: o.installTime || '', o });
+    });
+    return ev.sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function renderCalendar() {
+    $('calTitle').textContent = `${MONTHS_NOM[state.calMonth]} ${state.calYear}`;
+    const first = new Date(state.calYear, state.calMonth, 1);
+    const offset = (first.getDay() + 6) % 7; // неделя с понедельника
+    const days = new Date(state.calYear, state.calMonth + 1, 0).getDate();
+    const today = todayISO();
+    let html = '';
+    for (let i = 0; i < offset; i++) html += `<div class="cal-cell empty"></div>`;
+    for (let d = 1; d <= days; d++) {
+        const iso = `${state.calYear}-${pad(state.calMonth + 1)}-${pad(d)}`;
+        const cls = ['cal-cell', iso === today ? 'today' : '', iso === state.calSelected ? 'selected' : ''].join(' ');
+        html += `<div class="${cls}" data-action="cal-select" data-date="${iso}">${d}${eventsFor(iso).length ? '<span class="cal-dot"></span>' : ''}</div>`;
+    }
+    $('calGrid').innerHTML = html;
+
+    $('calDayTitle').textContent = '📅 План на ' + dateRu(state.calSelected);
+    const ev = eventsFor(state.calSelected);
+    $('calDayList').innerHTML = ev.length ? ev.map(e => `
+        <div class="event" data-action="open-order" data-id="${e.o.id}">
+            <span class="tag ${e.type}">${e.type === 'zamer' ? 'ЗАМЕР' : 'УСТАНОВКА'}</span><b>${esc(e.time || 'без времени')}</b>
+            <div>${esc(e.o.address)}</div>
+            <div class="muted">${esc(e.o.city)} · ${esc(e.o.phone || '')}</div>
+        </div>`).join('') : `<div class="empty">На этот день ничего не запланировано.</div>`;
+}
+
+function calSelect(iso) {
+    const [y, m] = iso.split('-').map(Number);
+    state.calYear = y; state.calMonth = m - 1; state.calSelected = iso;
+    renderCalendar();
+}
+function calShift(delta) {
+    state.calMonth += delta;
+    if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
+    if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
+    renderCalendar();
+}
+
+function openHistory() {
+    const done = orders.filter(o => o.status === 'Завершён').sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    openModal('📁 История (завершённые)', done.length ? done.map(o => `
+        <div class="event" data-action="open-order" data-id="${o.id}">
+            <b>${esc(o.address)}</b>
+            <div class="muted">${esc(o.city)} · ${o.installDate ? dateRu(o.installDate) : ''} · ${fmtMoney(o.finalTotal || 0)}</div>
+        </div>`).join('') : `<div class="empty">Завершённых заказов пока нет.</div>`);
+}
+
+/* ==========================================================
+   9. НОВЫЙ ЗАКАЗ (мастер из 4 шагов)
+   ========================================================== */
+function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.toggle('active', s.id === 'step' + n));
+    if (n === 2) updateTotals();
+    window.scrollTo(0, 0);
+}
+
+function renderMeshChips() {
+    $('meshChips').innerHTML = Object.keys(MESH_TYPES).map(k =>
+        `<button class="chip" data-action="chip" data-group="mesh" data-value="${k}">${MESH_TYPES[k]} · ${fmtNum(settings.prices[k])}</button>`).join('');
+}
+function renderColorChips() {
+    $('colorChips').innerHTML = COLORS.map(c =>
+        `<button class="chip" data-action="chip" data-group="color" data-value="${c.key}"><span class="dot dot-${c.key}"></span>${c.name}</button>`).join('');
+}
+
+// Подсветить выбранные «таблетки» в соответствии с состоянием
+function syncChips() {
+    const current = { room: state.calc.room, construct: state.calc.construct, mesh: state.calc.mesh,
+                      color: state.calc.color, discount: String(state.draft.discount) };
+    document.querySelectorAll('.chip[data-group]').forEach(ch => {
+        const g = ch.dataset.group;
+        ch.classList.toggle('active', String(current[g]) === ch.dataset.value);
+    });
+}
+
+function updateCalcPreview() {
+    const w = num($('fW').value), h = num($('fH').value);
+    if (w <= 0 || h <= 0) {
+        $('calcArea').textContent = 'Площадь: 0.00 м²';
+        $('calcPrice').textContent = '0 тг';
+        return null;
+    }
+    const p = itemPrice(w, h, state.calc.mesh);
+    $('calcArea').textContent = `Площадь: ${p.area.toFixed(2)} м²`;
+    $('calcPrice').textContent = fmtMoney(p.total);
+    return { w, h, ...p };
+}
+
+function renderDraft() {
+    $('draftList').innerHTML = state.draft.items.map((it, i) => `
+        <div class="item-row">
+            <span><strong>#${i + 1} [${esc(it.room)}]</strong> ${it.width}×${it.height} см · ${CONSTRUCTS[it.construct]} · ${colorName(it.color)}</span>
+            <span><strong class="accent">${fmtMoney(it.total)}</strong>
+                <span class="item-del" data-action="del-item" data-index="${i}">✕</span></span>
+        </div>`).join('');
+}
+
+function updateTotals() {
+    const c = orderCalc(state.draft.items, state.draft.discount, num($('fPrepay').value));
+    $('pBase').textContent = fmtMoney(c.base);
+    $('pDisc').textContent = `${state.draft.discount}% (−${fmtNum(c.discAmount)} тг)`;
+    $('pTotal').textContent = fmtMoney(c.total);
+    $('pBalance').textContent = fmtMoney(c.balance);
+    return c;
+}
+
+function readClientForm() {
+    return {
+        city: $('fCity').value,
+        address: $('fAddress').value.trim(),
+        phone: $('fPhone').value.trim(),
+        zamerDate: $('fZamerDate').value,
+        zamerTime: $('fZamerTime').value,
+        master: $('fMaster').value
+    };
+}
+function fillClientForm(o) {
+    $('fCity').value = o.city || 'Караганда';
+    $('fAddress').value = o.address || '';
+    $('fPhone').value = o.phone || '';
+    $('fZamerDate').value = o.zamerDate || todayISO();
+    $('fZamerTime').value = o.zamerTime || '15:00';
+    if (o.master && ![...$('fMaster').options].some(op => op.value === o.master)) {
+        $('fMaster').add(new Option(o.master, o.master));
+    }
+    $('fMaster').value = o.master || (settings.masters[0] || '');
+}
+
+function resetWizard() {
+    state.draft = { id: null, items: [], discount: 0 };
+    state.calc = { room: 'Кухня', construct: 'window', mesh: 'standard', color: 'white' };
+    ['fW', 'fH', 'fRoomCustom', 'fPrepay', 'fAddress', 'fPhone', 'fInstallDate'].forEach(id => { $(id).value = ''; });
+    fillClientForm({});
+    $('fInstallTime').value = '12:00';
+    $('editHeader').hidden = true;
+    renderDraft(); syncChips(); updateCalcPreview(); updateTotals();
+}
+
+function startNewOrder() {
+    if (!can('create')) return;
+    resetWizard();
+    showStep(0);
+    switchNav('new');
+}
+
+function newOrderObject(client) {
+    const now = Date.now();
+    return Object.assign({
+        id: newId(), status: 'Замер', items: [], discount: 0, prepayment: 0, finalTotal: 0, balanceDue: 0,
+        installDate: '', installTime: '', createdAt: now, updatedAt: now
+    }, client);
+}
+
+function saveQuickOrder() {
+    const c = readClientForm();
+    if (!c.address) { alertBox('Нет адреса', 'Укажите адрес объекта.'); return; }
+    if (!c.zamerDate) { alertBox('Нет даты', 'Выберите дату замера.'); return; }
+    orders.push(newOrderObject(c));
+    saveOrders();
+    state.statusFilter = 'Замер';
+    switchNav('orders');
+    toast('Заявка на замер сохранена ✅');
+}
+
+function clientToDims() {
+    const c = readClientForm();
+    if (!c.address) { alertBox('Нет адреса', 'Сначала укажите адрес объекта.'); return; }
+    showStep(1);
+}
+
+// Открыть существующий заказ для внесения / изменения размеров
+function openMeasure(id) {
+    const o = orders.find(x => x.id === id);
+    if (!o || !can('measure')) return;
+    resetWizard();
+    state.draft = { id: o.id, items: clone(o.items || []), discount: o.discount || 0 };
+    fillClientForm(o);
+    $('fPrepay').value = o.prepayment || '';
+    $('fInstallDate').value = o.installDate || '';
+    $('fInstallTime').value = o.installTime || '12:00';
+    const a = splitAddress(o);
+    $('editHeaderTitle').textContent = '📍 ' + a.street;
+    $('editHeaderSub').textContent = `${o.phone || 'без телефона'} · ${a.city}`;
+    $('editHeader').hidden = false;
+    renderDraft(); syncChips(); updateCalcPreview(); updateTotals();
+    showStep(1);
+    switchNav('new');
+}
+
+function addItem() {
+    const w = num($('fW').value), h = num($('fH').value);
+    if (w <= 0 || h <= 0) { alertBox('Введите размеры', 'Укажите ширину и высоту в сантиметрах (например, 50 и 100).'); return; }
+    const room = $('fRoomCustom').value.trim() || state.calc.room;
+    const p = itemPrice(w, h, state.calc.mesh);
+    state.draft.items.push({
+        room, construct: state.calc.construct, width: w, height: h,
+        mesh: state.calc.mesh, color: state.calc.color,
+        pricePerM2: settings.prices[state.calc.mesh], // цена, действовавшая на момент замера
+        total: p.total
+    });
+    $('fW').value = ''; $('fH').value = '';
+    renderDraft(); updateCalcPreview(); updateTotals();
+}
+
+function toPricing() {
+    if (!state.draft.items.length) { alertBox('Нет изделий', 'Добавьте хотя бы одно изделие кнопкой «+ Добавить изделие».'); return; }
+    showStep(2);
+}
+
+function finishOrder() {
+    if (!state.draft.items.length) { alertBox('Нет изделий', 'Добавьте хотя бы одно изделие.'); return; }
+    const client = readClientForm();
+    if (!client.address) { alertBox('Нет адреса', 'Укажите адрес объекта.'); return; }
+    const c = orderCalc(state.draft.items, state.draft.discount, num($('fPrepay').value));
+
+    let o = state.draft.id ? orders.find(x => x.id === state.draft.id) : null;
+    if (!o) { o = newOrderObject(client); orders.push(o); }
+    else Object.assign(o, client);
+
+    Object.assign(o, {
+        items: clone(state.draft.items),
+        discount: state.draft.discount,
+        prepayment: c.prepay,
+        finalTotal: c.total,
+        balanceDue: c.balance,
+        installDate: $('fInstallDate').value,
+        installTime: $('fInstallTime').value,
+        status: o.status === 'Завершён' ? 'Завершён' : 'Установка',
+        updatedAt: Date.now()
+    });
+    saveOrders();
+    state.statusFilter = o.status;
+    state.expanded.add(o.id);
+    switchNav('orders');
+    toast('Заказ сохранён ✅');
+}
+
+/* ==========================================================
+   10. СКЛАД
+   ========================================================== */
+const STOCK_GROUPS = [
+    { title: '🪟 Профиль: рама (хлыстов)', prefix: 'frame', byColor: true },
+    { title: '🚪 Профиль: крыло (хлыстов)', prefix: 'wing', byColor: true },
+    { title: '📦 Комплекты уголков (шт)', prefix: 'kit', byColor: true },
+    { title: '🕸 Сетка', items: [{ key: 'mesh_packs', label: 'Пачки 3.0×30 м (90 м²)' }] }
+];
+
+function renderStock() {
+    renderNeeds();
+    if (!can('stock')) { $('stockInputs').innerHTML = ''; return; }
+    let html = `<details class="card"><summary>📊 Текущие остатки сырья</summary><div class="details-body">
+        <div class="stock-head"><div>Материал</div><div>Остаток</div><div>Закуп, тг</div></div>`;
+    STOCK_GROUPS.forEach(g => {
+        html += `<div class="stock-group">${g.title}</div>`;
+        const rows = g.byColor ? COLORS.map(c => ({ key: g.prefix + '_' + c.key, label: `<span class="dot dot-${c.key}"></span> ${c.name}` })) : g.items;
+        rows.forEach(r => {
+            html += `<div class="stock-row"><span>${r.label}</span>
+                <input type="number" inputmode="decimal" step="any" data-stock="${r.key}" data-field="qty" value="${stock[r.key] ? esc(stock[r.key].qty) : ''}" placeholder="0">
+                <input type="number" inputmode="numeric" data-stock="${r.key}" data-field="cost" value="${stock[r.key] ? esc(stock[r.key].cost) : ''}" placeholder="0"></div>`;
+        });
+    });
+    html += `</div></details>`;
+    $('stockInputs').innerHTML = html;
+    $('view-stock').querySelector('[data-action="open-finance"]').hidden = !can('finance');
+}
+
+function needRowHtml(title, need, have, deficit, unit, extra, cost) {
+    return `<div class="need-row ${deficit > 0 ? 'deficit' : 'ok'}">
+        <div><b>${title}</b>: нужно ${need} ${unit}, на складе ${have}${deficit > 0 ? ` → <b class="danger-text">не хватает ${deficit}</b>` : ' ✓'}</div>
+        ${extra ? `<div class="sub">${extra}</div>` : ''}
+        ${cost > 0 ? `<div class="sub">К закупке ≈ ${fmtMoney(cost)}</div>` : ''}</div>`;
+}
+
+function renderNeeds() {
+    const n = computeNeeds();
+    let html = `<div class="card"><h3>📦 Потребность и закупка</h3>`;
+    if (!n.orderCount) {
+        html += `<div class="muted small-text">Нет заказов с внесёнными размерами — потребности нет.</div></div>`;
+        $('stockNeeds').innerHTML = html;
+        return;
+    }
+    html += `<div class="muted small-text" style="margin-bottom:8px">Заказов в работе: ${n.orderCount}. Хлыст профиля: ${n.barLen} см.</div>`;
+    n.frames.forEach(r => {
+        const extra = `Обрезки ≈ ${fmtNum(r.waste)} см` + (r.oversize.length ? ` · ⚠️ кусок длиннее хлыста: ${r.oversize.map(fmtCm).join(', ')} см` : '');
+        html += needRowHtml(`Рама ${colorName(r.color)}`, r.need, r.have, r.deficit, 'хл.', extra, r.cost);
+    });
+    n.kits.forEach(r => { html += needRowHtml(`Комплекты ${colorName(r.color)}`, r.need, r.have, r.deficit, 'шт', '', r.cost); });
+    const m = n.mesh;
+    html += needRowHtml('Сетка', m.needArea.toFixed(1), m.haveArea.toFixed(0), Math.max(0, Math.ceil(m.needArea - m.haveArea)), 'м²',
+        m.deficitPacks ? `Докупить пачек: ${m.deficitPacks}` : '', m.cost);
+    if (n.totalCost > 0) html += `<div class="pay-box"><div class="pay-row big"><span>Итого к закупке:</span><strong class="danger-text">${fmtMoney(n.totalCost)}</strong></div></div>`;
+    html += `</div>`;
+    $('stockNeeds').innerHTML = html;
+}
+
+/* ==========================================================
+   11. КАССА
+   ========================================================== */
+function openFinance() {
+    if (!can('finance')) return;
+    const t = financeTotals();
+    const list = expenses.slice().reverse().map(e => `
+        <div class="item-row"><span>${esc(e.title)} <span class="muted small-text">${esc(e.date || '')}</span></span>
+        <span><strong class="danger-text">−${fmtMoney(e.sum)}</strong>
+        <span class="item-del" data-action="del-expense" data-id="${e.id}">✕</span></span></div>`).join('');
+    openModal('📊 Доходы и расходы', `
+        <div class="pay-box">
+            <div class="pay-row"><span>Оборот (все заказы):</span><strong>${fmtMoney(t.revenue)}</strong></div>
+            <div class="pay-row"><span>Собрано:</span><strong class="accent">${fmtMoney(t.collected)}</strong></div>
+            <div class="pay-row"><span>К сбору:</span><strong>${fmtMoney(t.pending)}</strong></div>
+            <div class="pay-row"><span>Расходы:</span><strong class="danger-text">−${fmtMoney(t.spent)}</strong></div>
+            <div class="pay-row big"><span>Прибыль (собрано − расходы):</span><strong class="${t.profit >= 0 ? 'accent' : 'danger-text'}">${fmtMoney(t.profit)}</strong></div>
+        </div>
+        <h3>Добавить расход</h3>
+        <div class="row mb">
+            <input id="expTitle" type="text" placeholder="На что (напр. профиль)">
+            <input id="expSum" type="number" inputmode="numeric" placeholder="Сумма" style="max-width:110px">
+        </div>
+        <button class="btn primary wide mb" data-action="add-expense">+ Добавить расход</button>
+        ${list || '<div class="empty">Расходов пока нет.</div>'}`,
+        `<button class="btn secondary wide" data-action="close-modal">Закрыть</button>`);
+}
+
+/* ==========================================================
+   12. НАСТРОЙКИ
+   ========================================================== */
+function renderSettings() {
+    const admin = can('prices');
+    const t = financeTotals();
+    let h = `<div class="card"><h3>👤 Профиль и роль</h3>
+        <button class="btn secondary wide mb" data-action="open-roles">${ROLES[settings.role].full}</button>
+        <button class="btn secondary wide" data-action="toggle-theme">${settings.theme === 'light' ? '🌙 Включить ночную тему' : '☀️ Включить дневную тему'}</button></div>`;
+
+    if (admin) {
+        h += `<div class="card"><h3>💰 Цены за 1 м²</h3>
+            <p class="muted small-text">Новые цены применяются к новым изделиям. Уже сохранённые заказы не пересчитываются.</p>
+            ${Object.keys(MESH_TYPES).map(k => `<label>${MESH_TYPES[k]}, тг за м²</label>
+                <input type="number" inputmode="numeric" data-price="${k}" value="${settings.prices[k]}" class="mb">`).join('')}
+            <button class="btn primary wide" data-action="save-prices">💾 Сохранить цены</button></div>
+
+            <div class="card"><h3>🛠 Производство</h3>
+            <label>Длина хлыста профиля, см</label>
+            <input type="number" inputmode="numeric" id="setBar" value="${settings.barLength}" class="mb">
+            <label>Толщина пилы, см (добавляется к длинам распила)</label>
+            <input type="number" inputmode="decimal" step="0.1" id="setBlade" value="${settings.blade}" class="mb">
+            <label>Мастера (через запятую)</label>
+            <input type="text" id="setMasters" value="${esc(settings.masters.join(', '))}" class="mb">
+            <button class="btn primary wide" data-action="save-production">💾 Сохранить</button></div>
+
+            <div class="card"><h3>💵 Касса</h3>
+            <div class="pay-box"><div class="pay-row"><span>Оборот:</span><strong>${fmtMoney(t.revenue)}</strong></div>
+            <div class="pay-row"><span>Собрано:</span><strong>${fmtMoney(t.collected)}</strong></div>
+            <div class="pay-row"><span class="danger-text">К сбору:</span><strong class="danger-text">${fmtMoney(t.pending)}</strong></div></div>
+            <button class="btn secondary wide" data-action="open-finance">📊 Доходы и расходы</button></div>
+
+            <div class="card"><h3>🔐 PIN-код управляющего</h3>
+            <label>Новый PIN (4–6 цифр)</label>
+            <input type="password" inputmode="numeric" maxlength="6" id="setPin" placeholder="••••" class="mb">
+            <button class="btn secondary wide" data-action="save-pin">Сменить PIN</button></div>
+
+            <div class="card"><h3>☁️ Синхронизация и копии</h3>
+            <label>Ссылка Google Apps Script (необязательно)</label>
+            <input type="url" id="setScript" value="${esc(settings.scriptUrl)}" placeholder="https://script.google.com/macros/s/.../exec" class="mb">
+            <button class="btn primary wide mb" data-action="save-script">💾 Сохранить ссылку и синхронизировать</button>
+            <button class="btn secondary wide mb" data-action="export-backup">⬇️ Скачать копию данных (JSON)</button>
+            <button class="btn secondary wide mb" data-action="import-backup">⬆️ Загрузить копию данных</button>
+            <button class="btn secondary wide danger-border" data-action="delete-all">🗑 Удалить ВСЕ заказы</button></div>`;
+    }
+    h += `<p class="muted small-text" style="text-align:center">CAMARO.STOP v${APP_VERSION}</p>`;
+    $('settingsBody').innerHTML = h;
+}
+
+function openRoles() {
+    openModal('Выберите профиль', Object.keys(ROLES).map(k =>
+        `<div class="picker-item" data-action="pick-role" data-role="${k}"><span>${ROLES[k].full}</span><span class="accent">${settings.role === k ? '✓' : ''}</span></div>`).join(''),
+        `<button class="btn secondary wide" data-action="close-modal">Отмена</button>`);
+}
+
+function setRole(role) {
+    settings.role = role;
+    saveSettings();
+    closeModal();
+    state.view = 'orders';
+    switchNav('orders');
+    toast('Профиль: ' + ROLES[role].label);
+}
+
+function exportBackup() {
+    const data = { app: 'camaro-stop', version: 1, exportedAt: new Date().toISOString(),
+                   orders, deleted: deletedIds, stock, expenses, prices: settings.prices };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `camaro-backup-${todayISO()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+function importBackup(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const data = JSON.parse(reader.result);
+            if (data.app !== 'camaro-stop' || !Array.isArray(data.orders)) throw new Error('bad');
+            confirmBox('Загрузить копию?', `В копии заказов: ${data.orders.length}.\nТекущие заказы, склад и расходы будут ЗАМЕНЕНЫ.`, () => {
+                orders = data.orders; deletedIds = data.deleted || []; stock = data.stock || {}; expenses = data.expenses || [];
+                if (data.prices) settings.prices = Object.assign({}, DEFAULT_SETTINGS.prices, data.prices);
+                saveOrders(); saveDeleted(); saveStock(); saveExpenses(); saveSettings();
+                renderMeshChips(); syncChips();
+                renderSettings();
+                toast('Копия загружена ✅');
+            }, 'Заменить');
+        } catch (e) { alertBox('Ошибка', 'Это не файл копии CAMARO.STOP.'); }
+    };
+    reader.readAsText(file);
+}
+
+/* ==========================================================
+   13. СИНХРОНИЗАЦИЯ С GOOGLE ТАБЛИЦЕЙ
+   Приложение отправляет заказы в Google Apps Script, а тот хранит их
+   в таблице. Конфликты решаются по полю updatedAt (побеждает более новый).
+   ========================================================== */
+let syncing = false;
+let syncLeft = 30;
+
+function updateSyncBadge() {
+    const b = $('syncBadge');
+    if (!settings.scriptUrl) b.textContent = '☁️ выкл';
+    else b.textContent = syncing ? '⏳' : `⚡ ${syncLeft}с`;
+}
+
+function mergeRemote(remote) {
+    (remote.deleted || []).forEach(id => { id = String(id); if (!deletedIds.includes(id)) deletedIds.push(id); });
+    const map = new Map(orders.map(o => [o.id, o]));
+    (remote.orders || []).forEach(r => {
+        const local = map.get(r.id);
+        if (!local || (r.updatedAt || 0) > (local.updatedAt || 0)) map.set(r.id, r);
+    });
+    orders = [...map.values()].filter(o => !deletedIds.includes(o.id));
+    saveOrders(); saveDeleted();
+}
+
+async function syncNow(manual) {
+    if (!settings.scriptUrl) {
+        if (manual) alertBox('Синхронизация выключена', 'Вставьте ссылку Google Apps Script в Настройках (инструкция — в README.md).');
+        return;
+    }
+    if (syncing) return;
+    syncing = true; updateSyncBadge();
+    try {
+        const sep = settings.scriptUrl.includes('?') ? '&' : '?';
+        const res = await fetch(settings.scriptUrl + sep + 'action=get', { cache: 'no-store' });
+        mergeRemote(await res.json());
+        // text/plain — чтобы браузер не делал лишний «предварительный» запрос (CORS preflight)
+        await fetch(settings.scriptUrl, {
+            method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ orders, deleted: deletedIds })
+        });
+        if (manual) toast('Синхронизировано ✅');
+    } catch (err) {
+        console.error('Sync error', err);
+        if (manual) toast('Нет связи с Google Таблицей');
+    } finally {
+        syncing = false; syncLeft = 30;
+        updateSyncBadge();
+        refreshCurrentView();
+    }
+}
+
+function startSyncTimer() {
+    setInterval(() => {
+        if (!settings.scriptUrl || syncing) return;
+        syncLeft--;
+        if (syncLeft <= 0) syncNow(false);
+        updateSyncBadge();
+    }, 1000);
+}
+
+/* ==========================================================
+   14. РАЗБОР ТЕКСТА ИЗ WHATSAPP
+   Без нейросетей: ищем телефон, район и строку, похожую на адрес.
+   ========================================================== */
+function parseWhatsApp(text) {
+    const m = text.match(/(?:\+?7|8)[\s\-()]*\d{3}[\s\-()]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}/);
+    const phone = m ? formatPhone(m[0]) : '';
+    const rest = m ? text.replace(m[0], ' ') : text;
+    const city = CITIES.find(c => rest.toLowerCase().includes(c.toLowerCase())) || '';
+    const lines = rest.split(/\n+/).map(s => s.trim()).filter(Boolean);
+    let addr = lines.find(l => /(ул\.|улица|пр\.|проспект|мкр|микрорайон|бульвар|бул\.|дом|д\.|кв\.|квартира|переулок|пер\.)/i.test(l)) || lines[0] || '';
+    addr = addr.replace(/^(адрес|address)\s*[:\-–]\s*/i, '').trim();
+    return { phone, city, address: addr };
+}
+
+function openWaParser() {
+    openModal('🤖 Распознать заявку из WhatsApp',
+        `<textarea id="waText" rows="7" placeholder="Вставьте сюда скопированный текст заявки..."></textarea>`,
+        `<div class="grid2"><button class="btn secondary" data-action="close-modal">Отмена</button>
+         <button class="btn primary" data-action="apply-wa">Вставить в форму ➔</button></div>`);
+}
+
+/* ==========================================================
+   15. ОБРАБОТЧИКИ (actions)
+   В HTML у кнопок стоит data-action="имя". Здесь — что делает каждое имя.
+   ========================================================== */
+const actions = {
+    'close-modal': () => closeModal(),
+    'confirm-yes': () => { const cb = modalState.onConfirm; closeModal(); if (cb) cb(); },
+    'pin-ok': () => {
+        const input = $('pinInput');
+        if (input.value === String(settings.pin)) {
+            const cb = modalState.onPin; closeModal(); if (cb) cb();
+        } else { input.value = ''; toast('Неверный PIN'); }
+    },
+
+    'nav': el => switchNav(el.dataset.view),
+    'new-order': () => startNewOrder(),
+    'toggle-theme': () => { settings.theme = settings.theme === 'light' ? 'dark' : 'light'; saveSettings(); applyTheme(); if (state.view === 'settings') renderSettings(); },
+    'sync-now': () => syncNow(true),
+    'logo-tap': () => {
+        state.logoTaps++;
+        clearTimeout(state.logoTimer);
+        state.logoTimer = setTimeout(() => { state.logoTaps = 0; }, 3000);
+        if (state.logoTaps >= 5) { state.logoTaps = 0; openFinance(); }
+    },
+
+    // заказы
+    'set-status-filter': el => { state.statusFilter = el.dataset.value; renderOrders(); },
+    'toggle-order': el => {
+        const id = el.dataset.id;
+        if (state.expanded.has(id)) state.expanded.delete(id); else state.expanded.add(id);
+        const card = document.querySelector(`[data-order="${id}"]`);
+        if (card) card.classList.toggle('open', state.expanded.has(id));
+    },
+    'open-order': el => openOrderInList(el.dataset.id),
+    'open-cut': el => openCut(el.dataset.id),
+    'share-cut': () => shareCut(),
+    'open-measure': el => openMeasure(el.dataset.id),
+    'open-status': el => openStatusModal(el.dataset.id),
+    'apply-status': el => {
+        const o = orders.find(x => x.id === el.dataset.id);
+        if (o) { o.status = el.dataset.value; o.updatedAt = Date.now(); saveOrders(); }
+        closeModal();
+        state.statusFilter = el.dataset.value;
+        renderOrders();
+        toast('Статус: ' + el.dataset.value);
+    },
+    'delete-order': el => pinBox('🗑 Удаление заказа', () => deleteOrder(el.dataset.id)),
+
+    // календарь
+    'cal-prev': () => calShift(-1),
+    'cal-next': () => calShift(1),
+    'cal-select': el => calSelect(el.dataset.date),
+    'cal-today': el => calSelect(addDaysISO(Number(el.dataset.offset))),
+    'open-history': () => openHistory(),
+
+    // мастер нового заказа
+    'chip': el => {
+        const g = el.dataset.group, v = el.dataset.value;
+        if (g === 'room') { state.calc.room = v; $('fRoomCustom').value = ''; }
+        if (g === 'construct') state.calc.construct = v;
+        if (g === 'mesh') state.calc.mesh = v;
+        if (g === 'color') state.calc.color = v;
+        if (g === 'discount') state.draft.discount = Number(v);
+        syncChips();
+        updateCalcPreview();
+        if (g === 'discount') updateTotals();
+    },
+    'add-item': () => addItem(),
+    'del-item': el => { state.draft.items.splice(Number(el.dataset.index), 1); renderDraft(); updateTotals(); },
+    'save-quick': () => saveQuickOrder(),
+    'client-to-dims': () => clientToDims(),
+    'to-pricing': () => toPricing(),
+    'go-step': el => showStep(Number(el.dataset.step)),
+    'go-orders': () => switchNav('orders'),
+    'prepay-percent': el => {
+        const c = orderCalc(state.draft.items, state.draft.discount, 0);
+        $('fPrepay').value = Math.round(c.total * Number(el.dataset.percent) / 100);
+        updateTotals();
+    },
+    'quick-install': el => { $('fInstallDate').value = addDaysISO(Number(el.dataset.offset)); },
+    'finish-order': () => finishOrder(),
+    'open-wa-parser': () => openWaParser(),
+    'apply-wa': () => {
+        const r = parseWhatsApp($('waText').value);
+        if (r.phone) $('fPhone').value = r.phone;
+        if (r.city) $('fCity').value = r.city;
+        if (r.address) $('fAddress').value = r.address;
+        closeModal();
+        toast(r.phone || r.address ? 'Данные подставлены — проверьте' : 'Ничего не удалось распознать');
+    },
+
+    // финансы
+    'open-finance': () => openFinance(),
+    'add-expense': () => {
+        const title = $('expTitle').value.trim(), sum = num($('expSum').value);
+        if (!title || sum <= 0) { toast('Укажите название и сумму'); return; }
+        expenses.push({ id: newId(), title, sum, date: dateRu(todayISO()) });
+        saveExpenses(); openFinance();
+    },
+    'del-expense': el => { expenses = expenses.filter(e => e.id !== el.dataset.id); saveExpenses(); openFinance(); },
+
+    // настройки
+    'open-roles': () => openRoles(),
+    'pick-role': el => {
+        const role = el.dataset.role;
+        if (role === 'admin' && settings.role !== 'admin') { closeModal(); pinBox('👑 Вход управляющего', () => setRole('admin')); }
+        else setRole(role);
+    },
+    'save-prices': () => {
+        const next = {};
+        let ok = true;
+        document.querySelectorAll('[data-price]').forEach(i => { const v = num(i.value); if (v <= 0) ok = false; next[i.dataset.price] = Math.round(v); });
+        if (!ok) { alertBox('Ошибка', 'Цена должна быть больше нуля.'); return; }
+        settings.prices = Object.assign({}, settings.prices, next);
+        saveSettings(); renderMeshChips(); syncChips(); updateCalcPreview();
+        toast('Цены сохранены ✅');
+    },
+    'save-production': () => {
+        const bar = num($('setBar').value), blade = num($('setBlade').value);
+        if (bar < 100) { alertBox('Ошибка', 'Длина хлыста должна быть не меньше 100 см.'); return; }
+        settings.barLength = bar;
+        settings.blade = blade;
+        settings.masters = $('setMasters').value.split(',').map(s => s.trim()).filter(Boolean);
+        if (!settings.masters.length) settings.masters = ['Мастер 1'];
+        saveSettings(); fillMasters();
+        toast('Сохранено ✅');
+    },
+    'save-pin': () => {
+        const p = $('setPin').value.trim();
+        if (!/^\d{4,6}$/.test(p)) { alertBox('Ошибка', 'PIN должен состоять из 4–6 цифр.'); return; }
+        settings.pin = p; saveSettings(); $('setPin').value = '';
+        toast('PIN изменён ✅');
+    },
+    'save-script': () => {
+        settings.scriptUrl = $('setScript').value.trim();
+        saveSettings(); syncLeft = 30; updateSyncBadge();
+        if (settings.scriptUrl) syncNow(true); else toast('Синхронизация выключена');
+    },
+    'export-backup': () => exportBackup(),
+    'import-backup': () => $('importFile').click(),
+    'delete-all': () => pinBox('⚠️ Удалить ВСЕ заказы', () =>
+        confirmBox('Точно удалить?', 'Все заказы будут удалены безвозвратно.', () => {
+            orders.forEach(o => { if (!deletedIds.includes(o.id)) deletedIds.push(o.id); });
+            orders = []; saveOrders(); saveDeleted(); renderSettings(); toast('Все заказы удалены');
+        }, 'Стереть всё'))
+};
+
+function bindEvents() {
+    // Один обработчик кликов на весь документ («делегирование событий»)
+    document.addEventListener('click', e => {
+        const el = e.target.closest('[data-action]');
+        if (!el) {
+            if (e.target.id === 'modal') closeModal(); // клик по тёмному фону
+            return;
+        }
+        const fn = actions[el.dataset.action];
+        if (fn) fn(el, e);
+    });
+
+    // Ввод текста
+    document.addEventListener('input', e => {
+        const t = e.target;
+        if (t.id === 'searchInput') { state.search = t.value; renderOrders(); }
+        else if (t.id === 'fPhone') t.value = formatPhone(t.value);
+        else if (t.id === 'fW' || t.id === 'fH') updateCalcPreview();
+        else if (t.id === 'fRoomCustom') { state.calc.room = t.value.trim() || 'Кухня'; syncChips(); }
+        else if (t.id === 'fPrepay') updateTotals();
+        else if (t.dataset && t.dataset.stock) {
+            const k = t.dataset.stock;
+            if (!stock[k]) stock[k] = { qty: '', cost: '' };
+            stock[k][t.dataset.field] = t.value;
+            saveStock();
+            renderNeeds();
+        }
+    });
+
+    document.addEventListener('change', e => {
+        if (e.target.id === 'cityFilter') { state.city = e.target.value; renderOrders(); }
+        if (e.target.id === 'importFile' && e.target.files[0]) { importBackup(e.target.files[0]); e.target.value = ''; }
+    });
+}
+
+/* ==========================================================
+   16. ЗАПУСК
+   ========================================================== */
+function fillMasters() {
+    const sel = $('fMaster');
+    const prev = sel.value;
+    sel.innerHTML = settings.masters.map(m => `<option>${esc(m)}</option>`).join('');
+    if (prev) sel.value = prev;
+}
+
+function init() {
+    bindEvents();
+    $('cityFilter').innerHTML = ['Все'].concat(CITIES).map(c => `<option value="${esc(c)}">${c === 'Все' ? '📍 Все районы' : esc(c)}</option>`).join('');
+    $('fCity').innerHTML = CITIES.map(c => `<option>${esc(c)}</option>`).join('');
+    fillMasters();
+    renderMeshChips();
+    renderColorChips();
+    applyTheme();
+
+    const now = new Date();
+    state.calYear = now.getFullYear();
+    state.calMonth = now.getMonth();
+    state.calSelected = todayISO();
+
+    resetWizard();
+    showStep(0);
+    switchNav('orders');
+    updateSyncBadge();
+    startSyncTimer();
+    if (settings.scriptUrl) syncNow(false);
+}
+
+if (typeof document !== 'undefined' && document.getElementById('modal')) init();
+
+// Для проверки логики в Node.js (npm test) — в браузере игнорируется
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { getCutting, packBars, formatPhone, parseWhatsApp, orderCalc, itemPrice, settings, DEFAULT_SETTINGS };
+}
+
+    </script>
+</body>
+</html>
